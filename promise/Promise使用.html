@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 这里我们一定要把promise实现原理的文件引入，这样当前的文件才能使用promise方法 -->
+    <script src="./Promise实现原理.js"></script>
+    <script>
+      // 1.先使用Promise
+      // promise的回调函数中参数为：resolve:成功的函数，reject：失败的函数
+      // 这个a变量是promise的实例，也就是说a变量是promise的对象
+      //   let a = new Promise((resolve, reject) => {
+      //     // throw '手动抛出错误'
+
+      //     // 2. 模拟异步请求，这里使用了定时器来进行模拟的
+      //     setTimeout(() => {
+      //       let data = null;
+      //       if (Math.round(Math.random()) < 0.5) {
+      //         data = true;
+      //       } else {
+      //         data = false;
+      //       }
+
+      //       //3.在判断根据请求返回回来的数据进行返回出去
+      //       if (data) {
+      //         resolve("获取数据成功" + data);
+      //       } else {
+      //         reject("获取数据失败" + data);
+      //       }
+      //     }, 2000);
+      //   });
+
+      //2. promise中的then方法
+
+      //   //4. 我们在通过a变量去访问promise中的then方法，
+      //   // 5.在then方法中我们可以定义二个参数为函数形式的，而这二个函数一个是获取promise返回的成功数据，另一个是获取promise返回的失败的原因
+      //   let b = a.then(
+      //     (value) => {
+      //       console.log("获取promise返回回来的成功的数据:" + value);
+      //     }
+      //     // (cause) => {
+      //     //   console.log("获取promise返回回来的获取数据失败的原因:" + cause);
+      //     // }
+      //   );
+
+      // 3. promise中的cause方法
+
+      //   b.catch((cause) => {
+      //     console.log("只接收错误的信息"+cause);
+      //   });
+
+      //4. promise中的reject方法
+
+      //   let cw =  Promise.reject('错误信息')
+      //   console.log(cw);
+
+      // 5.promise中的resolve方法
+
+      //   let cw = Promise.resolve(
+      //     new Promise((resolve, reject) => {
+      //       resolve(2);
+      //       reject(9);
+      //     })
+      //   );
+      //   console.log(cw);
+
+      //6. promise中的resolveDelay方.注意了该方法在promise中是没有的,该方法是我们自己定义的,该方法的作用就是延迟promise执行
+      // 该方法有二个参数,第一个为promise对象或者js类型值,第二个位为定时器的时间值
+      //   Promise.resolveDelay(2, 2000);
+
+      //7. promise中的rejectDelay方法.注意了该方法在promise中也是没有的,也是我们自己定义的
+      //   该方法也是有二个参数的,该方法的作用跟resolveDelay方是一样的,只不过该方法只对失败的函数有用
+      //   let a = Promise.rejectDelay(2, 2000).catch((value) => {
+      //     console.log(value);
+      //   });
+
+      // 8. Promise中的race(),该方法在promise中的作用是接收多个promise对象或者js类型值.
+      // 而race方法的作用就是在这些值中选择第一个完成的promise对象(其中可能包含成功或者失败)或者js类型的值
+      // 注意了race方法接收的值是以数组形式的
+
+      //  这个promise对象是成功
+      let a = Promise.resolveDelay(
+        // new Promise((resolve, reject) => {
+        //   resolve("成功获取数据");
+        // }),
+        "成功了",
+        2000
+      );
+
+      // let b = Promise.resolveDelay(
+      //   // new Promise((resolve, reject) => {
+      //   //   resolve("成功获取数据");
+      //   // }),
+      //   "成功了1",
+      //   2500
+      // );
+
+      let c = Promise.resolveDelay(
+        // new Promise((resolve, reject) => {
+        //   resolve("成功获取数据");
+        // }),
+        "成功了2",
+        1000
+      );
+
+      //这个promise对象是失败
+      let b = Promise.rejectDelay(
+        // new Promise((resolve, reject) => {
+        //   reject("获取数据失败");
+        // }),
+        "失败了",
+        2500
+      );
+
+      //我们把这二个promise对象放进去.这里先说一下结果:第二个promise会被抛出去,因为第二个promise先执行完毕的
+      // 注意了：race就相当于是一个中间人，他只负责获取第一个执行完了的promise或者js类型值（不管成功或者失败），并不会打印内容，所以我们还是要使用then方法或者catch方法来获取相当于的结果值
+      // let c = Promise.race([a, b]);
+      // c.then(
+      //   (value) => {
+      //     console.log(value);
+      //   },
+      //   (a) => {
+      //     console.log(a);
+      //   }
+      // );
+
+      // 9.promise中的all()方法，该方法使用跟race是一样的，也是把promise对象还在js类型值放在数组中进行迭代操作
+      // 不过all()方法有一个注意点，就是：只有所有的promise和js类型值是resolve形才能触发下一个then()方法的resolve函数
+      // 如果数组中一个promise对象或者js类型值为reject形的，那all()方法就会返回这个错误的信息出去
+      // 还有：如果全部元素都为resolve，返回也是以数组形式返回的，注意：顺序也是跟原理数组是一样的，不能发生改变的
+      Promise.all([a, b, c]).then(
+        (value) => {
+          console.log(value);
+        },
+        (a) => {
+          console.log(a);
+        }
+      );
+    </script>
+  </body>
+</html>
